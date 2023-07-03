@@ -3,44 +3,44 @@ defmodule Robot.GameTest do
 
   alias Robot.Game
   @valid_position {0, 0}
-  @valid_orientation :north
-  @valid_game %Game{robot_position: @valid_position, robot_orientation: @valid_orientation}
+  @valid_facing :north
+  @valid_game %Game{robot_position: @valid_position, robot_facing: @valid_facing}
 
   describe "valid?/1" do
     test "valid based on column and row" do
       valid_positions = for x <- 0..4, y <- 0..4, do: {x, y}
 
       for {x, y} <- valid_positions do
-        assert Game.valid?(%Game{robot_position: {x, y}, robot_orientation: @valid_orientation}) ==
+        assert Game.valid?(%Game{robot_position: {x, y}, robot_facing: @valid_facing}) ==
                  true
       end
     end
 
     test "invalid positions" do
-      assert Game.valid?(%Game{robot_position: {-1, 0}, robot_orientation: @valid_orientation}) ==
+      assert Game.valid?(%Game{robot_position: {-1, 0}, robot_facing: @valid_facing}) ==
                false
 
-      assert Game.valid?(%Game{robot_position: {6, 0}, robot_orientation: @valid_orientation}) ==
+      assert Game.valid?(%Game{robot_position: {6, 0}, robot_facing: @valid_facing}) ==
                false
 
-      assert Game.valid?(%Game{robot_position: {0, -1}, robot_orientation: @valid_orientation}) ==
+      assert Game.valid?(%Game{robot_position: {0, -1}, robot_facing: @valid_facing}) ==
                false
 
-      assert Game.valid?(%Game{robot_position: {0, 6}, robot_orientation: @valid_orientation}) ==
+      assert Game.valid?(%Game{robot_position: {0, 6}, robot_facing: @valid_facing}) ==
                false
     end
 
-    test "valid orientations" do
-      assert Game.valid?(%Game{@valid_game | robot_orientation: :north}) == true
-      assert Game.valid?(%Game{@valid_game | robot_orientation: :east}) == true
-      assert Game.valid?(%Game{@valid_game | robot_orientation: :south}) == true
-      assert Game.valid?(%Game{@valid_game | robot_orientation: :west}) == true
+    test "valid facings" do
+      assert Game.valid?(%Game{@valid_game | robot_facing: :north}) == true
+      assert Game.valid?(%Game{@valid_game | robot_facing: :east}) == true
+      assert Game.valid?(%Game{@valid_game | robot_facing: :south}) == true
+      assert Game.valid?(%Game{@valid_game | robot_facing: :west}) == true
     end
 
-    test "invalid orientations" do
-      assert Game.valid?(%Game{@valid_game | robot_orientation: :left}) == false
-      assert Game.valid?(%Game{@valid_game | robot_orientation: 1}) == false
-      assert Game.valid?(%Game{@valid_game | robot_orientation: nil}) == false
+    test "invalid facings" do
+      assert Game.valid?(%Game{@valid_game | robot_facing: :left}) == false
+      assert Game.valid?(%Game{@valid_game | robot_facing: 1}) == false
+      assert Game.valid?(%Game{@valid_game | robot_facing: nil}) == false
     end
   end
 end
