@@ -13,22 +13,6 @@ defmodule RobotTest do
     }
   end
 
-  test "left command", %{game: game} do
-    assert game.robot_facing == :north
-
-    new_game = Robot.command(game, :left)
-
-    assert new_game.robot_facing == :west
-  end
-
-  test "right command", %{game: game} do
-    assert game.robot_facing == :north
-
-    new_game = Robot.command(game, :right)
-
-    assert new_game.robot_facing == :east
-  end
-
   test "run" do
     assert run("""
                   PLACE 0,0,NORTH

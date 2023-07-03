@@ -43,4 +43,20 @@ defmodule Robot.GameTest do
       assert Game.valid?(%Game{@valid_game | robot_facing: nil}) == false
     end
   end
+
+  test "left command" do
+    assert @valid_game.robot_facing == :north
+
+    new_game = Game.command(@valid_game, :left)
+
+    assert new_game.robot_facing == :west
+  end
+
+  test "right command" do
+    assert @valid_game.robot_facing == :north
+
+    new_game = Game.command(@valid_game, :right)
+
+    assert new_game.robot_facing == :east
+  end
 end
