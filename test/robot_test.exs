@@ -1,6 +1,5 @@
 defmodule RobotTest do
   use ExUnit.Case
-  import ExUnit.CaptureIO
   doctest Robot
 
   alias Robot.Game
@@ -50,13 +49,12 @@ defmodule RobotTest do
   end
 
   def run(instructions) do
-    output =
-      capture_io(fn ->
-        case Robot.run(instructions) do
-          %Game{} = game -> game
-        end
-      end)
+    game =
+      case Robot.run(instructions) do
+        %Game{} = game -> game
+      end
 
-    String.trim(output)
+    Enum.reverse(game.reports)
+    |> Enum.join("\n")
   end
 end

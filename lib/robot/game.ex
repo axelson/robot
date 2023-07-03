@@ -1,7 +1,7 @@
 defmodule Robot.Game do
   require Logger
 
-  defstruct [:robot_position, :robot_facing]
+  defstruct [:robot_position, :robot_facing, reports: []]
 
   @board_cols 5
   @board_rows 5
@@ -70,9 +70,10 @@ defmodule Robot.Game do
   end
 
   def command(%Game{} = game, :report) do
-    %Game{robot_position: {x, y}, robot_facing: facing} = game
-    IO.puts(Enum.join([x, y, String.upcase(to_string(facing))], ","))
-    game
+    %Game{robot_position: {x, y}, robot_facing: facing, reports: reports} = game
+
+    report = Enum.join([x, y, String.upcase(to_string(facing))], ",")
+    %Game{game | reports: [report | reports]}
   end
 
   def left(:north), do: :west
