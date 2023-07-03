@@ -35,6 +35,27 @@ defmodule RobotTest do
            """) == "3,3,NORTH"
   end
 
+  test "multiple reports" do
+    assert run("""
+           PLACE 1,2,EAST
+           MOVE
+           MOVE
+           LEFT
+           MOVE
+           REPORT
+           MOVE
+           LEFT
+           MOVE
+           REPORT
+           MOVE
+           REPORT
+           """) == """
+           3,3,NORTH
+           2,4,WEST
+           1,4,WEST\
+           """
+  end
+
   test "ignores invalid placements" do
     assert run("""
            PLACE 1,6,WEST
