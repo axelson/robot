@@ -24,32 +24,71 @@ defmodule Robot.Parser do
   """
   import NimbleParsec
 
+  whitespace = ascii_char([?\s, ?\t, ?\n]) |> times(min: 1)
+
   left_command =
-    string("LEFT")
-|> replace(:turn_left)
+    ignore(optional(whitespace))
+    |> string("LEFT")
+    |> replace(:turn_left)
 
-  right_command = string("RIGHT")
-  |> replace(:turn_right)
+  right_command =
+    ignore(optional(whitespace))
+    |> string("RIGHT")
+    |> replace(:turn_right)
 
-    digits = [?0..?9] |> ascii_string(min: 1) |> label("digits")
+  digits = [?0..?9] |> ascii_string(min: 1) |> label("digits")
 
-    place_command = string("PLACE ")
-    |> concat(digits)
+  int =
+    digits
+    |> reduce(:to_integer)
+    |> label("integer")
+
+  defp to_integer(acc), do: acc |> Enum.join() |> String.to_integer(10)
+
+  facing =
+    choice([
+      string("NORTH"),
+      string("EAST"),
+      string("SOUTH"),
+      string("WEST")
+    ])
+    |> reduce(:to_facing)
+
+  defp to_facing(["NORTH"]), do: :north
+  defp to_facing(["EAST"]), do: :east
+  defp to_facing(["SOUTH"]), do: :south
+  defp to_facing(["WEST"]), do: :west
+
+  place_command =
+    ignore(string("PLACE"))
+    |> ignore(string(" "))
+    |> concat(int)
     |> ignore(string(","))
-    |> concat(digits)
+    |> concat(int)
     |> ignore(string(","))
+    |> concat(facing)
+    |> reduce(:to_place)
+    |> unwrap_and_tag(:place)
+
+  def to_place([x, y, facing]) do
+    {{x, y}, facing}
+  end
+
+  defparsec(:place, place_command)
 
   line = [left_command, right_command, place_command] |> choice()
-  defparsec(:raw_parse, line)
+  defparsec(:raw_parse, repeat(line))
 
   def parse(string) do
-    raw_parse(string)
+    string
+    |> String.trim()
+    |> raw_parse()
     |> unwrap_result()
   end
 
   defp unwrap_result(result) do
     case result do
-      {:ok, [acc], "", _, _line, _offset} ->
+      {:ok, acc, "", _, _line, _offset} ->
         {:ok, acc}
 
       {:ok, _, rest, _, _line, _offset} ->
