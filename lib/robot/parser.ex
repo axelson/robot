@@ -17,10 +17,10 @@ defmodule Robot.Parser do
   {:ok, :move}
 
   iex> Robot.Parser.parse("LEFT")
-  {:ok, :turn_left}
+  {:ok, :left}
 
   iex> Robot.Parser.parse("RIGHT")
-  {:ok, :turn_right}
+  {:ok, :right}
   """
   import NimbleParsec
 
@@ -29,12 +29,22 @@ defmodule Robot.Parser do
   left_command =
     ignore(optional(whitespace))
     |> string("LEFT")
-    |> replace(:turn_left)
+    |> replace(:left)
 
   right_command =
     ignore(optional(whitespace))
     |> string("RIGHT")
-    |> replace(:turn_right)
+    |> replace(:right)
+
+  report_command =
+    ignore(optional(whitespace))
+    |> string("REPORT")
+    |> replace(:report)
+
+  move_command =
+    ignore(optional(whitespace))
+    |> string("MOVE")
+    |> replace(:move)
 
   digits = [?0..?9] |> ascii_string(min: 1) |> label("digits")
 
@@ -60,7 +70,8 @@ defmodule Robot.Parser do
   defp to_facing(["WEST"]), do: :west
 
   place_command =
-    ignore(string("PLACE"))
+    ignore(optional(whitespace))
+    |> ignore(string("PLACE"))
     |> ignore(string(" "))
     |> concat(int)
     |> ignore(string(","))
@@ -76,7 +87,7 @@ defmodule Robot.Parser do
 
   defparsec(:place, place_command)
 
-  line = [left_command, right_command, place_command] |> choice()
+  line = [left_command, right_command, place_command, report_command, move_command] |> choice()
   defparsec(:raw_parse, repeat(line))
 
   def parse(string) do

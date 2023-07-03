@@ -3,11 +3,11 @@ defmodule Robot.ParserTest do
   alias Robot.Parser
 
   test "left" do
-    assert Parser.parse("LEFT") == {:ok, [:turn_left]}
+    assert Parser.parse("LEFT") == {:ok, [:left]}
   end
 
   test "right" do
-    assert Parser.parse("RIGHT") == {:ok, [:turn_right]}
+    assert Parser.parse("RIGHT") == {:ok, [:right]}
   end
 
   test "place" do
@@ -21,6 +21,49 @@ defmodule Robot.ParserTest do
     assert Parser.parse("""
            LEFT
            RIGHT
-           """) == {:ok, [:turn_left, :turn_right]}
+           """) == {:ok, [:left, :right]}
+  end
+
+  test "report command" do
+    assert Parser.parse("REPORT") == {:ok, [:report]}
+  end
+
+  test "move command" do
+    assert Parser.parse("MOVE") == {:ok, [:move]}
+  end
+
+  test "short" do
+    assert Parser.parse("""
+           MOVE
+           PLACE 3,3,EAST
+           """) == {:ok, [:move, {:place, {{3, 3}, :east}}]}
+  end
+
+  test "short2" do
+    assert Parser.parse("PLACE 3,3,EAST") == {:ok, [{:place, {{3, 3}, :east}}]}
+  end
+
+  test "full command list" do
+    assert Parser.parse("""
+                  PLACE 1,6,WEST
+                  MOVE
+                  PLACE 3,3,EAST
+                  MOVE
+                  MOVE
+                  RIGHT
+                  MOVE
+                  REPORT
+           """) ==
+             {:ok,
+              [
+                {:place, {{1, 6}, :west}},
+                :move,
+                {:place, {{3, 3}, :east}},
+                :move,
+                :move,
+                :right,
+                :move,
+                :report
+              ]}
   end
 end
