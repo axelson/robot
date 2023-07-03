@@ -4,6 +4,8 @@ defmodule Robot.Game do
   @board_rows 5
   @facings [:north, :east, :south, :west]
 
+  alias __MODULE__
+
   defguard valid_x?(x) when is_integer(x) and x >= 0 and x < @board_cols
   defguard valid_y?(y) when is_integer(y) and y >= 0 and y < @board_rows
   defguard valid_facing?(facing) when facing in @facings
@@ -13,7 +15,7 @@ defmodule Robot.Game do
   end
 
   def new({:place, {{x, y}, facing}}) do
-    game = %__MODULE__{robot_position: {x, y}, robot_facing: facing}
+    game = %Game{robot_position: {x, y}, robot_facing: facing}
 
     if valid?(game) do
       {:ok, game}
@@ -22,10 +24,10 @@ defmodule Robot.Game do
     end
   end
 
-  def valid?(%__MODULE__{robot_position: {x, y}, robot_facing: facing})
+  def valid?(%Game{robot_position: {x, y}, robot_facing: facing})
       when valid_x?(x) and valid_y?(y) and valid_facing?(facing) do
     true
   end
 
-  def valid?(%__MODULE__{}), do: false
+  def valid?(%Game{}), do: false
 end
