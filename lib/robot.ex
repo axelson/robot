@@ -47,30 +47,12 @@ defmodule Robot do
     end
   end
 
-  @facings %{
-    0 => :north,
-    1 => :east,
-    2 => :south,
-    3 => :west
-  }
-  @reverse_facings Map.new(@facings, fn {idx, facing} -> {facing, idx} end)
-
   def command(%Game{robot_facing: facing} = game, :left) do
-    new_facing_idx =
-      case Map.get(@reverse_facings, facing) do
-        0 -> 3
-        idx -> rem(idx - 1, 4)
-      end
-
-    new_facing = Map.get(@facings, new_facing_idx)
-
-    %Game{game | robot_facing: new_facing}
+    %Game{game | robot_facing: left(facing)}
   end
 
   def command(%Game{robot_facing: facing} = game, :right) do
-    idx = Map.get(@reverse_facings, facing)
-    new_facing = Map.get(@facings, rem(idx + 1, 4))
-    %Game{game | robot_facing: new_facing}
+    %Game{game | robot_facing: right(facing)}
   end
 
   def command(%Game{robot_position: pos, robot_facing: facing} = game, :move) do
@@ -97,4 +79,14 @@ defmodule Robot do
     IO.puts(Enum.join([x, y, String.upcase(to_string(facing))], ","))
     game
   end
+
+  def left(:north), do: :west
+  def left(:east), do: :north
+  def left(:south), do: :east
+  def left(:west), do: :south
+
+  def right(:north), do: :east
+  def right(:east), do: :south
+  def right(:south), do: :west
+  def right(:west), do: :north
 end
